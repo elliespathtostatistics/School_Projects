@@ -1,0 +1,25 @@
+code used to run mapReduce
+*************************************************************
+#copy from local to hadoop cluster
+scp /Users/zhaolan/PROJECT1/Mapper.py inls5@152.2.23.173:/home/inls5/elliesdir/mapper.py 
+scp /Users/zhaolan/PROJECT1/Reduce.py inls5@152.2.23.173:/home/inls5/elliesdir/reducer.py
+
+#copy from own directory to a normal filesystem that every node can read so for tsail this means cpying it to the shared drive under my folder
+once you are in elliesdir
+cp mapper.py /shared/inls5
+
+#this is the textfile we are processing
+hadoop fs -ls /mindlink/Meds.txt meds.txt
+
+#command to issue to execute the mapReduce 
+hadoop jar /var/hadoop/share/hadoop/tools/lib/hadoop-streaming-2.7.3.jar -input /mindlink/Meds.txt -output my_mapreduce_output2 -mapper /shared/inls5/mapper.py -reducer /shared/inls5/reducer.py
+***************
+useful commands
+
+#show edits rights
+ls -l 
+
+#add permissions
+chmod +x file.py 
+
+*****************************************************************
