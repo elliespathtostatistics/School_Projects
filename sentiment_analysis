@@ -1,0 +1,54 @@
+# load in the libraries we'll need
+library(tidyverse)
+library(tidytext)
+library(glue)
+library(stringr)
+library(tokenizers)
+library(tm)
+library(SentimentAnalysis)
+library(sentiment)
+library(dplyr)
+library(plyr)
+library(plotly)
+library(ggplot2)
+library(readr) 
+library(tm)
+library(Matrix)
+library(syuzhet)
+library(lubridate)
+
+#see this link for an explanation of the syuzhet package: https://cran.r-project.org/web/packages/syuzhet/vignettes/syuzhet-vignette.html
+
+#read in our csv file and assign the column to a variable (setting stringsAsFactors = FALSE is very important)
+fileName<-read.csv('project_train_preprocessed_sentiment.csv', stringsAsFactors=FALSE)
+
+#note the following ways of subsetting will not make a vector out of the column you want
+#I spent some good amount of time going down the wrong path so I want to save some time for you.
+description<-fileName$description
+#this creates a dataframe not a vector
+avector <- as.vector(fileName['description'])
+
+#this successfully creates a vector of the column
+avector <- fileName[["description"]]
+
+#the following still gets back a factor
+avector <- fileName[,2]
+class(avector)
+
+#the following will get back a vector as well
+avector = c()
+for(row in description) { avector <- row }
+
+
+#we can apply the following to the vector 
+corpus <- VCorpus(VectorSource(avector))
+wordCorpus<-tm_map(corpus, removePunctuation)
+wordCorpus<-tm_map(wordCorpus, content_transformer(tolower))
+wordCorpus<-tm_map(wordCorpus, stripWhitespace)
+
+#core of the getting the sentiments scores back
+Sentiment<-get_nrc_sentiment(avector)
+binded<-cbind(avector, Sentiment)
+valence <- (binded[, 9]*-1) + binded[, 10]
+bind_valence<-cbind(binded, valence)
+write.csv(bind_valence, "sentiment_results.csv")
