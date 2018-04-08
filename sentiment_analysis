@@ -22,26 +22,27 @@ library(lubridate)
 #read in our csv file and assign the column to a variable (setting stringsAsFactors = FALSE is very important)
 fileName<-read.csv('project_train_preprocessed_sentiment.csv', stringsAsFactors=FALSE)
 
-#note the following ways of subsetting will not make a vector out of the column you want
+#NOTE: the following ways of subsetting will make a vector out of the column you want
 #I spent some good amount of time going down the wrong path so I want to save some time for you.
-description<-fileName$description
+
 #this creates a dataframe not a vector
 avector <- as.vector(fileName['description'])
-
-#this successfully creates a vector of the column
-avector <- fileName[["description"]]
-
-#the following still gets back a factor
-avector <- fileName[,2]
-class(avector)
-
-#the following will get back a vector as well
+#so does this
+description<-fileName$description
+#or this avector <- fileName[,2]
+#this still won't get you what you want
 avector = c()
 for(row in description) { avector <- row }
 
+#this SUCCESSFULLY creates a vector of the column
+avector <- fileName[["description"]]
+#you can use below to check if you are getting back the right thing
+class(avector)
 
 #we can apply the following to the vector 
 corpus <- VCorpus(VectorSource(avector))
+
+#if you need ot clean up your rows, do the following before running the above line
 wordCorpus<-tm_map(corpus, removePunctuation)
 wordCorpus<-tm_map(wordCorpus, content_transformer(tolower))
 wordCorpus<-tm_map(wordCorpus, stripWhitespace)
