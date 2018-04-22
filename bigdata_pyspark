@@ -1,0 +1,9 @@
+from pyspark.sql.functions import col
+
+df_csv = spark.read.format("csv").option("header", "true").load("hdfs:/mindlink/Meds.txt")
+
+df_csv2 = spark.read.format("csv").option("header", "true").load("hdfs:/mindlink/PDiagnose.txt")
+
+new_df = df_csv.where(col('Generic') == 'FENOFIBRATE').alias('a').join(df_csv2.alias('b'),(col('b.siteId') == col('a.siteId')) & (col('b.BackgroundID') == col('a.BackgroundID')) & (col('b.ednum') == col('a.ednum'))).select([col('a.siteId'), col('a.BackgroundID'), col('a.ednum')])
+
+new_df.show(10)
